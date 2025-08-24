@@ -1,5 +1,6 @@
 package com.super30.springbasics;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 
@@ -23,6 +24,7 @@ public class TheBestStudent {
     private int age;
 
     @OneToMany(mappedBy = "student")
+    @JsonManagedReference
     private Set<TheBestCourse> courses;
 
     @Email(message = "Email should be valid")

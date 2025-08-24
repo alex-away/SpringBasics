@@ -1,5 +1,6 @@
 package com.super30.springbasics;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -19,6 +20,7 @@ public class TheBestCourse {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "student_id")
+    @JsonBackReference
     private TheBestStudent student;
 
     public TheBestCourse(String name, TheBestStudent student) {
@@ -59,7 +61,6 @@ public class TheBestCourse {
         return "TheBestCourse{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", student=" + student +
                 '}';
     }
 }
