@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Student Management UI</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 {
+            background: #4CAF50;
+            color: white;
+            padding: 15px;
+            width: 100%;
+            text-align: center;
+            margin: 0;
+        }
+        .container {
+            margin-top: 20px;
+            max-width: 600px;
+            width: 100%;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        input, button {
+            padding: 10px;
+            margin: 5px;
+        }
+        input {
+            width: 30%;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            opacity: 0.9;
+        }
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background: #4CAF50;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+<h1>Student Management</h1>
+<div class="container">
+    <div>
+        <input type="text" id="studentName" placeholder="Enter student name">
+        <input type="number" id="studentAge" placeholder="Enter student age">
+        <button onclick="addStudent()">Add Student</button>
+    </div>
+
+    <table>
+        <thead>
+        <tr>
+            <th>Index</th>
+            <th>Name</th>
+            <th>Age</th>
+            <th>Update Name</th>
+            <th>Update Age</th>
+            <th>Delete</th>
+        </tr>
+        </thead>
+        <tbody id="studentTable">
+        <!-- Students will be listed here -->
+        </tbody>
+    </table>
+</div>
+
+<script>
+    const API_BASE = '/api/v2/students';
+
+    async function fetchStudents() {
+        const res = await fetch(`${API_BASE}/all`);
+        const students = await res.json();
+        const table = document.getElementById('studentTable');
+        table.innerHTML = '';
+        students.forEach((student, index) => {
+            table.innerHTML += `
+                <tr>
+                    <td>${index}</td>
+                    <td>${student.name}</td>
+                    <td>${student.age}</td>
+                    <td><button onclick="updateName(${index})">Update Name</button></td>
+                    <td><button onclick="updateAge(${index})">Update Age</button></td>
+                    <td><button onclick="deleteStudent(${index})">Delete</button></td>
+                </tr>
+            `;
+        });
+    }
+
+    async function addStudent() {
+        const name = document.getElementById('studentName').value;
+        const age = document.getElementById('studentAge').value;
+        if (!name) {
+            alert('Enter a name!');
+            return;
+        }
+        if (!age) {
+            alert('Enter a age!');
+            return;
+        }
+        await fetch(`${API_BASE}/add?name=${encodeURIComponent(name)}&age=${encodeURIComponent(age)}`, { method: 'POST' });
+        document.getElementById('studentName').value = '';
+        document.getElementById('studentAge').value = '';
+        await fetchStudents();
+    }
+
+
+
+    async function updateName(index) {
+        const newName = prompt('Enter new name:');
+        if (newName) {
+            await fetch(`${API_BASE}/update/name/${index}?name=${encodeURIComponent(newName)}`, { method: 'PUT' });
+            await fetchStudents();
+        }
+    }
+
+    async function updateAge(index) {
+        const newAge = prompt('Enter new age:');
+        if (newAge) {
+            await fetch(`${API_BASE}/update/age/${index}?age=${encodeURIComponent(newAge)}`, { method: 'PUT' });
+            await fetchStudents();
+        }
+    }
+
+    async function deleteStudent(index) {
+        if (confirm('Are you sure you want to delete this student?')) {
+            await fetch(`${API_BASE}/delete/${index}`, { method: 'DELETE' });
+            await fetchStudents();
+        }
+    }
+
+    // Load students when page starts
+    fetchStudents();
+</script>
+</body>
+</html>
