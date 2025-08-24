@@ -2,7 +2,9 @@ package com.super30.springbasics;
 
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
+import org.springframework.stereotype.Component;
 
+@Component
 public class TheBestStudentHealthIndicator implements HealthIndicator {
 
     private final TheBestStudentRepository repo;
